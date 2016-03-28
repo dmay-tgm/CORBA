@@ -55,7 +55,7 @@ public class Client extends CallBackPOA
 
         server.one_time (cb, "Hello! This is a test message.");
 
-	System.out.println("Executing periodically callback every 2 seconds.");	
+	System.out.println("Register periodically callback that is called every 2 seconds.");	
 
         server.register (cb, "This is a periodically occurring message.", (short) 2);
 
