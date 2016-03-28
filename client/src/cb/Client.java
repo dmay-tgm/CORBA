@@ -57,7 +57,10 @@ public class Client extends CallBackPOA
 
 	System.out.println("Register periodically callback that is called every 2 seconds.");	
 
-        server.register (cb, "This is a periodically occurring message.", (short) 2);
+        server.register (cb, "I'm the 2 seconds callback.", (short) 2);
+
+	System.out.println("Register periodically callback that is called every 3 seconds.");	
+        server.register (cb, "This is another message (3 seconds).", (short) 3);
 
 	System.out.println("Press [ENTER] to shut down the server.");
         while ( System.in.read() != '\n' );
