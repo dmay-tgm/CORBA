@@ -19,7 +19,7 @@
 	<property name="idl.dir" value="../idl" />
 	<property name="gen.dir" value="${build.dir}/generated" />
 	<property name="resources.dir" value="resources" />
-	<property name="jacorb.dir" value="/home/mike/opt/jacorb" />
+	<property name="jacorb.dir" value="/home/daniel/downloads/jacorb" />
 	<property name="tmp.dir" value="${build.dir}/tmp" />
 	<property name="host" value="127.0.0.1" />
 
@@ -73,9 +73,9 @@
 
 			Sollte kein Host angegeben werden, so wird localhost als Host verwendet.
 		</description>
-		<java fork="true" classname="helloworld.Client">
+		<java fork="true" classname="cb.Client">
 
-			<!-- Wuerde folgendem Aufruf entsprechen: java helloworld.Client -ORBInitRef NameService=corbaloc::127.0.0.1:2809/NameService -->
+			<!-- Wuerde folgendem Aufruf entsprechen: java cb.Client -ORBInitRef NameService=corbaloc::127.0.0.1:2809/NameService -->
 			<arg value="-ORBInitRef" />
 			<arg value="NameService=corbaloc::${host}:2809/NameService" />
 			<classpath refid="project.classpath" />

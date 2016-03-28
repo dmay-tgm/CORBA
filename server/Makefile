@@ -1,8 +1,8 @@
 CXX            	= /usr/bin/g++
 CPPFLAGS      	= -g -c
 LDFLAGS       	= -g
-OMNI_HOME     	= /home/mike/opt/omniORB
-OMNIIDL       	= $(OMNI_HOME)/bin/omniidl
+OMNI_HOME     	= /home/daniel/downloads/omniORB
+OMNIIDL       	= $(OMNI_HOME)/build/bin/omniidl
 LIBS          	= -lomniORB4 -lomnithread -lomniDynamic4
 OBJECTS       	= echoSK.o server.o
 IDL_DIR		= ../idl

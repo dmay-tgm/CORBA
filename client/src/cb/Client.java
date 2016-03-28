@@ -1,18 +1,8 @@
-package org.jacorb.demo.bidir;
+package cb;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.Properties;
-
-import org.omg.BiDirPolicy.BIDIRECTIONAL_POLICY_TYPE;
-import org.omg.BiDirPolicy.BOTH;
-import org.omg.BiDirPolicy.BidirectionalPolicyValueHelper;
-import org.omg.CORBA.Any;
-import org.omg.CORBA.Policy;
-import org.omg.PortableServer.IdAssignmentPolicyValue;
-import org.omg.PortableServer.ImplicitActivationPolicyValue;
-import org.omg.PortableServer.LifespanPolicyValue;
-import org.omg.PortableServer.POA;
+import org.omg.CosNaming.*;
+import org.omg.CORBA.*;
+import org.omg.PortableServer.*;
 
 /**
  * Client.java
@@ -23,13 +13,13 @@ import org.omg.PortableServer.POA;
  * @author Nicolas Noffke
  */
 
-public class Client extends ClientCallbackPOA
+public class Client extends CallBackPOA
 {
     public Client ()
     {
     }
 
-    public void hello (String message)
+    public void call_back (String message)
     {
         System.out.println ("Client callback object received hello message >"
                 + message + '<');
@@ -37,42 +27,31 @@ public class Client extends ClientCallbackPOA
 
     public static void main (String[] args) throws Exception
     {
-        Properties props = new Properties ();
-        props.put ("org.omg.PortableInterceptor.ORBInitializerClass.bidir_init",
-                   "org.jacorb.orb.giop.BiDirConnectionInitializer");
+        org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init (args,null);
 
-        org.omg.CORBA.ORB orb = org.omg.CORBA.ORB.init (args, props);
+	/* Erhalten des RootContext des angegebenen Namingservices */
+	org.omg.CORBA.Object o = orb.resolve_initial_references("NameService");
+			
+	/* Verwenden von NamingContextExt */
+	NamingContextExt rootContext = NamingContextExtHelper.narrow(o);
+			
+	/* Angeben des Pfades zum Echo Objekt */
+	NameComponent[] name = new NameComponent[2];
+	name[0] = new NameComponent("test","my_context");
+	name[1] = new NameComponent("Echo", "Object");
+        //org.omg.CORBA.Object o = orb.string_to_object ("IOR:010000001200000049444c3a63622f5365727665723a312e30000000010000000000000064000000010102000e0000003139322e3136382e312e3131390039b40e000000fe5259f85600001a6c000000000000000200000000000000080000000100000000545441010000001c00000001000000010001000100000001000105090101000100000009010100");
 
-        BufferedReader br = new BufferedReader (new FileReader (args[0]));
+        Server server = ServerHelper.narrow (rootContext.resolve(name));
 
-        org.omg.CORBA.Object o = orb.string_to_object (br.readLine ());
+        //POA root_poa = (POA) orb.resolve_initial_references ("RootPOA");
 
-        Server server = ServerHelper.narrow (o);
+	 POA poa = POAHelper.narrow( orb.resolve_initial_references( "RootPOA" ));
+        //bidir_poa.the_POAManager ().activate ();
+        poa.the_POAManager ().activate ();
 
-        Any any = orb.create_any ();
-        BidirectionalPolicyValueHelper.insert (any, BOTH.value);
+        CallBack cb = CallBackHelper.narrow (poa.servant_to_reference (new Client ()));
 
-        POA root_poa = (POA) orb.resolve_initial_references ("RootPOA");
-
-        Policy[] policies = new Policy[4];
-        policies[0] = root_poa.create_lifespan_policy (LifespanPolicyValue.TRANSIENT);
-
-        policies[1] = root_poa.create_id_assignment_policy (IdAssignmentPolicyValue.SYSTEM_ID);
-
-        policies[2] = root_poa.create_implicit_activation_policy (ImplicitActivationPolicyValue.IMPLICIT_ACTIVATION);
-
-        policies[3] = orb.create_policy (BIDIRECTIONAL_POLICY_TYPE.value, any);
-
-        POA bidir_poa = root_poa.create_POA ("BiDirPOA",
-                                             root_poa.the_POAManager (),
-                                             policies);
-        bidir_poa.the_POAManager ().activate ();
-
-        ClientCallback ccb = ClientCallbackHelper.narrow (bidir_poa.servant_to_reference (new Client ()));
-
-        server.register_callback (ccb);
-
-        server.callback_hello ("A test string");
+        server.one_time (cb, "Hello! This is a test message.");
 
         server.shutdown();
     }
