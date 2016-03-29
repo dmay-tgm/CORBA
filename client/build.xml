@@ -77,7 +77,7 @@
 
 			<!-- Wuerde folgendem Aufruf entsprechen: java cb.Client -ORBInitRef NameService=corbaloc::127.0.0.1:2809/NameService -->
 			<arg value="-ORBInitRef" />
-			<arg value="NameService=corbaloc::${host}:2809/NameService" />
+			<arg value="NameService=corbaloc::${host}:2809" />
 			<classpath refid="project.classpath" />
 		</java>
 	</target>
